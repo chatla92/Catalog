@@ -1,0 +1,55 @@
+{% extends "main.html" %}
+{% block content %}
+    <div id="sidebar" >
+      <ul class="sidebar-nav">
+        <li class="sidebar-brand">
+          <span class="glyphicon glyphicon-list" aria-hidden="true">Catagories</span>
+        </li>
+        {% for categ in categories %}
+        <li>
+          <a class="glyphicon glyphicon-chevron-right" aria-hidden="true"   href = "{{url_for('showProductsinCategory', categ_id=categ.cat_id)}}">{{categ.category}}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="catalog_products">
+      <div class="login_add_header">
+        <div class="add_items">
+          <a href="{{url_for('newProduct')}}">
+            <button class="btn btn-default" >
+              <span class="glyphicon glyphicon-phone" aria-hidden="true"></span>Add Product
+            </button>
+          </a>
+        </div>
+        <div class="login_link">
+          <a href="{{url_for('showLogin')}}">
+            <button class="btn btn-default" >
+              <span class="glyphicon glyphicon-user" aria-hidden="true"></span>Click here to login
+            </button>
+          </a>
+        </div>
+      </div>
+      <div class = 'flash'>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+        {% for message in messages %}
+            <li> <strong> {{ message }} </strong> </li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+      </div>
+      <section class="divider"><h6>Latest Products</h6></section>
+      <section class="latest_cat">
+      <ul>
+        {% for prod in products %}
+        <li>
+          <h5><a href = "{{url_for('showProduct', categ_id=prod.cat_id, product_id=prod.id )}}">{{prod.name}} <h6 style="font-style:italic;">({{prod.category}})</h6></a></h5><br
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+  </div>
+{% endblock %}
