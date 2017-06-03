@@ -22,6 +22,7 @@ class User(Base):
     def verify_password(self, password):
         return pwd_context.verify(password, self.password_hash)
 
+
 class Categories(Base):
     __tablename__ = 'categories'
 
