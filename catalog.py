@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
+from flask import Flask, render_template, request, redirect, jsonify, url_for
+from flask import make_response, flash
 from sqlalchemy import create_engine, asc, desc
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Products, Reviews, Categories, User
@@ -9,7 +10,7 @@ from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 import httplib2
 import json
-from flask import make_response
+
 import requests
 from flask.ext.httpauth import HTTPBasicAuth
 
@@ -20,13 +21,14 @@ CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "Catalog Application"
 
-
 # Connect to Database and create database session
 engine = create_engine('sqlite:///1_electronics_catalog.db')
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
+
+# Login Page
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -62,8 +64,9 @@ def verify_password(username, password):
     user = session.query(User).filter_by(name=username).first()
     if not user or not user.verify_password(password):
         return False
-    login_session['username'] = username
     return True
+
+# Add a new user
 
 
 @app.route('/users/add', methods=['GET', 'POST'])
@@ -91,6 +94,8 @@ def new_user():
         login_session['user_id'] = user.id
         flash('User created succesfully')
         return redirect('/catalog')
+
+# Google login
 
 
 @app.route('/gconnect', methods=['POST'])
@@ -145,7 +150,8 @@ def gconnect():
     stored_credentials = login_session.get('credentials')
     stored_gplus_id = login_session.get('gplus_id')
     if stored_credentials is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('Current user is already connected.'),
+        response = make_response(json.dumps('Current user is'
+                                            'already connected.'),
                                  200)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -179,34 +185,13 @@ def gconnect():
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;' \
+              '-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
     flash("you are now logged in as %s" % login_session['username'])
     print "done!"
     return output
 
-# User Helper Functions
-
-
-def createUser(login_session):
-    newUser = User(name=login_session['username'], email=login_session[
-                   'email'])
-    session.add(newUser)
-    session.commit()
-    user = session.query(User).filter_by(email=login_session['email']).one()
-    return user.id
-
-
-def getUserInfo(user_id):
-    user = session.query(User).filter_by(id=user_id).one()
-    return user
-
-
-def getUserID(email):
-    try:
-        user = session.query(User).filter_by(email=email).one()
-        return user.id
-    except:
-        return None
+# Google disconnect
 
 
 @app.route('/gdisconnect')
@@ -250,7 +235,32 @@ def disconnect():
         return redirect(url_for('showCatalog'))
 
 
-# JSON APIs to view Restaurant Information
+# Helper Functions
+
+
+def createUser(login_session):
+    newUser = User(name=login_session['username'], email=login_session[
+        'email'])
+    session.add(newUser)
+    session.commit()
+    user = session.query(User).filter_by(email=login_session['email']).one()
+    return user.id
+
+
+def getUserInfo(user_id):
+    user = session.query(User).filter_by(id=user_id).one()
+    return user
+
+
+def getUserID(email):
+    try:
+        user = session.query(User).filter_by(email=email).one()
+        return user.id
+    except:
+        return None
+
+
+# JSON APIs
 @app.route('/catalog/<int:cat>/JSON')
 @auth.login_required
 def ProductsInCatalogJSON(cat):
@@ -272,6 +282,8 @@ def CatalogJSON():
         Products.category).all()
     return jsonify(categories=[c.category for c in categories])
 
+# Home Page
+
 
 @app.route('/')
 @app.route('/catalog/')
@@ -279,9 +291,14 @@ def showCatalog():
     prods = session.query(Products).order_by(desc(Products.id)).limit(10).all()
     categories = session.query(Products).group_by(Products.category).all()
     if 'username' not in login_session:
-        return render_template('public_catalog.html', products=prods, categories=categories)
+        return render_template('public_catalog.html', products=prods,
+                               categories=categories)
     else:
-        return render_template('catalog.html', products=prods, categories=categories, user=login_session['username'])
+        return render_template('catalog.html', products=prods,
+                               categories=categories,
+                               user=login_session['username'])
+
+# List all the products in a category
 
 
 @app.route('/catalog/<int:categ_id>/')
@@ -289,9 +306,14 @@ def showProductsinCategory(categ_id):
     products = session.query(Products).filter_by(cat_id=categ_id).all()
     category = session.query(Categories).filter_by(id=categ_id).one()
     if 'username' not in login_session:
-        return render_template('public_category.html', cat=category.name, products=products)
+        return render_template('public_category.html',
+                               cat=category.name, products=products)
     else:
-        return render_template('category.html', cat=category.name, products=products, user=login_session['username'])
+        return render_template('category.html', cat=category.name,
+                               products=products,
+                               user=login_session['username'])
+
+# Display Information of a product
 
 
 @app.route('/catalog/<int:categ_id>/products/<int:product_id>')
@@ -302,11 +324,20 @@ def showProduct(categ_id, product_id):
     name = {}
     for r in reviews:
         name[r.id] = session.query(User).filter_by(id=r.user_id).one().name
-    if 'username' not in login_session or creator.id != login_session['user_id']:
-        flash("You either are not logged in or don't have permission to edit the item")
-        return render_template('product_show_public.html', item=product, reviews=reviews, names=name)
+    if 'username' not in login_session:
+        flash("You are not logged in to edit the item")
+        return render_template('product_show_public.html',
+                               item=product, reviews=reviews, names=name)
+    if creator.id != login_session['user_id']:
+        flash("You don't have permission to edit the item")
+        return render_template('product_show_public.html',
+                               item=product, reviews=reviews, names=name)
     else:
-        return render_template('product_show.html', item=product, reviews=reviews, names=name, user=login_session['username'])
+        return render_template('product_show.html',
+                               item=product, reviews=reviews, names=name,
+                               user=login_session['username'])
+
+# Add a new product
 
 
 @app.route('/catalog/new', methods=['GET', 'POST'])
@@ -316,7 +347,10 @@ def newProduct():
         return redirect('/login')
     if request.method == 'POST':
         new_product = Products(
-            name=request.form['name'], category=request.form['category'], desc=request.form['decsription'], url=request.form['url'], img=request.form['img'], user_id=login_session['user_id'])
+            name=request.form['name'], category=request.form['category'],
+            desc=request.form['decsription'],
+            url=request.form['url'],
+            img=request.form['img'], user_id=login_session['user_id'])
         session.add(new_product)
         flash('New Item %s Successfully Created' % new_product.name)
         session.commit()
@@ -324,8 +358,11 @@ def newProduct():
     else:
         return render_template('new_product.html')
 
+# Edit a product
 
-@app.route('/catalog/<int:categ_id>/products/<int:product_id>/edit', methods=['GET', 'POST'])
+
+@app.route('/catalog/<int:categ_id>/products/<int:product_id>/edit',
+           methods=['GET', 'POST'])
 def editProduct(categ_id, product_id):
     if 'username' not in login_session:
         flash('Please Login to edit item')
@@ -333,7 +370,10 @@ def editProduct(categ_id, product_id):
     editedItem = session.query(Products).filter_by(id=product_id).one()
 
     if login_session['user_id'] != editedItem.user_id:
-        return "<script>function myFunction() {alert('You are not authorized to edit this product;}</script><body onload='myFunction()''>"
+        return ("<script>function myFunction() {alert('You are not authorized"
+                " to edit this product. '); window.location = '/catalog/" +
+                str(categ_id) + "/products/" + str(product_id) +
+                "';}</script><body onload='myFunction()''>")
     if request.method == 'POST':
         if request.form['name']:
             session.query(Products).filter_by(id=product_id).update(
@@ -353,15 +393,18 @@ def editProduct(categ_id, product_id):
         session.add(editedItem)
         session.commit()
         flash('Menu Item Successfully Edited')
-        # return redirect(url_for('showProductsinCategory', categ_id=categ_id))
-        return redirect('/catalog/' + str(categ_id) + '/products/' + str(product_id))
+        return redirect('/catalog/' + str(categ_id) + '/products/' +
+                        str(product_id))
     else:
-        return render_template('edit_product.html', product_id=product_id, item=editedItem)
+        return render_template('edit_product.html',
+                               product_id=product_id, item=editedItem)
 
-# Delete a menu item
+
+# Delete a product
 
 
-@app.route('/catalog/<int:categ_id>/products/<int:product_id>/delete', methods=['GET', 'POST'])
+@app.route('/catalog/<int:categ_id>/products/<int:product_id>/delete',
+           methods=['GET', 'POST'])
 def deleteProduct(categ_id, product_id):
     if 'username' not in login_session:
         flash('Please Login to delete item')
@@ -369,7 +412,10 @@ def deleteProduct(categ_id, product_id):
 
     ItemToDelete = session.query(Products).filter_by(id=product_id).one()
     if login_session['user_id'] != ItemToDelete.user_id:
-        return "<script>function myFunction() {alert('You are not authorized to delete this product. ');}</script><body onload='myFunction()''>"
+        return ("<script>function myFunction() {alert('You are not authorized "
+                "to delete this product. '); window.location = '/catalog/" +
+                str(categ_id) + "/products/" + str(product_id) +
+                "';}</script><body onload='myFunction()''>")
 
     if request.method == 'POST':
         session.delete(ItemToDelete)

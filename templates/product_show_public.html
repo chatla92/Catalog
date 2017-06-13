@@ -1,70 +1,68 @@
-{% extends "main.html" %}
-{% block content %}
-    <div id="sidebar" >
-      <ul class="sidebar-nav">
-        <li class="sidebar-brand">
-          <span>{{item.category}}</span><span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
-        </li>
-      </ul>
+{% extends "main.html" %} {% block content %}
+<div id="sidebar">
+  <ul class="sidebar-nav">
+    <li class="sidebar-brand">
+      <span>{{item.category}}</span><span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
+    </li>
+  </ul>
+</div>
+
+<div class="catalog_products">
+  <div class="login_add_header">
+    <div class="add_items">
+      <a href="{{url_for('newProduct')}}">
+        <button class="btn btn-default">
+          <span class="glyphicon glyphicon-phone" aria-hidden="true"></span>Add Product
+        </button>
+      </a>
     </div>
-
-    <div class="catalog_products">
-      <div class="login_add_header">
-        <div class="add_items">
-          <a href="{{url_for('newProduct')}}">
-            <button class="btn btn-default">
-              <span class="glyphicon glyphicon-phone" aria-hidden="true"></span>Add Product
-            </button>
-          </a>
-        </div>
-        <div class="login_link">
-          <a href="{{url_for('showLogin')}}">
-            <button class="btn btn-default" >
-              <span class="glyphicon glyphicon-user" aria-hidden="true"></span>Click here to login
-            </button>
-          </a>
-        </div>
-      </div>
-      <div class = 'flash'>
-         {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <ul>
-        {% for message in messages %}
-            <li> <strong> {{ message }} </strong> </li>
-        {% endfor %}
-        </ul>
-        {% endif %}
-        {% endwith %}
-      </div>
-      <section class="divider"><h6>{{item.name}}</h6></section>
-      <ul>
-        <li>
-        <section class="latest_cat">
-          <h5><a href="{{url_for('showProductsinCategory', categ_id=item.cat_id)}}">Category</a></h5><br>
-          <article>{{item.category}}</article>
-
-        </section>
-        </li>
-        <li>
-          <section class="latest_cat">
-            <h5><a>Description   </a><a href="{{item.url}}" target="_blank"><img  class="git" src="{{url_for('static', filename='amaz.png')}}" alt="Amazon Link"></a></h5><br>
-            <article>{{item.desc}}</article>
-          </section>
-        </li>
-        <li>
-          <section class="latest_cat">
-            <h5><a>Reviews</a></h5><br>
-            <ul >
-              {% for r in reviews %}
-              <li>
-                <h5>{{names[r.id]}}</h5>
-                <h6>{{r.review}}</h6>
-              </li>
-              {% endfor %}
-            </ul>
-          </section>
-        </li>
-      </ul>
+    <div class="login_link">
+      <a href="{{url_for('showLogin')}}">
+        <button class="btn btn-default" >
+          <span class="glyphicon glyphicon-user" aria-hidden="true"></span>Click here to login
+        </button>
+      </a>
+    </div>
   </div>
+  <div class='flash'>
+    {% with messages = get_flashed_messages() %} {% if messages %}
+    <ul>
+      {% for message in messages %}
+      <li> <strong> {{ message }} </strong> </li>
+      {% endfor %}
+    </ul>
+    {% endif %} {% endwith %}
+  </div>
+  <section class="divider">
+    <h6>{{item.name}}</h6></section>
+  <ul>
+    <li>
+      <section class="latest_cat">
+        <h5><a href="{{url_for('showProductsinCategory', categ_id=item.cat_id)}}">Category</a></h5><br>
+        <article>{{item.category}}</article>
+
+      </section>
+    </li>
+    <li>
+      <section class="latest_cat">
+        <h5><a>Description   </a><a href="{{item.url}}" target="_blank"><img  class="git" src="{{url_for('static', filename='amaz.png')}}" alt="Amazon Link"></a></h5><br>
+        <article>{{item.desc}}</article>
+      </section>
+    </li>
+    <li>
+      <section class="latest_cat">
+        <h5><a>Reviews</a></h5><br>
+        <ul>
+          {% for r in reviews %}
+          <li>
+            <h5>{{names[r.id]}}</h5>
+            <h6>{{r.review}}</h6>
+          </li>
+          {% endfor %}
+        </ul>
+      </section>
+    </li>
+  </ul>
+</div>
 
 {% endblock %}

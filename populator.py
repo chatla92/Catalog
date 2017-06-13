@@ -26,7 +26,9 @@ for line in content:
         try:
             cat = session.query(Categories).filter_by(
                 name=details[2].strip()).one()
-            P = Products(name=name.strip(), cat_id=cat.id, category=details[2].strip(), desc=details[3].strip(), user_id=uid,
+            P = Products(name=name.strip(), cat_id=cat.id,
+                         category=details[2].strip(),
+                         desc=details[3].strip(), user_id=uid,
                          img=details[4], url=details[7])
             session.add(P)
             session.commit()
@@ -36,7 +38,9 @@ for line in content:
             session.commit()
             cat = session.query(Categories).filter_by(
                 name=details[2].strip()).one()
-            P = Products(name=name.strip(), cat_id=cat.id, category=details[2].strip(), desc=details[3].strip(), user_id=uid,
+            P = Products(name=name.strip(), cat_id=cat.id,
+                         category=details[2].strip(),
+                         desc=details[3].strip(), user_id=uid,
                          img=details[4], url=details[7])
             session.add(P)
             session.commit()

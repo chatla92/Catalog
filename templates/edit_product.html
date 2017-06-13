@@ -1,38 +1,38 @@
-{% extends "main.html" %}
-{% block content %}
-    <div id="sidebar" >
-      <ul class="sidebar-nav">
-        <li class="sidebar-brand">
-        {{item.name}}<span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
-        </li>
-      </ul>
+{% extends "main.html" %} {% block content %}
+<div id="sidebar">
+  <ul class="sidebar-nav">
+    <li class="sidebar-brand">
+      {{item.name}}<span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
+    </li>
+  </ul>
+</div>
+
+<div class="catalog_products">
+  <form action="#" method="post">
+    <div class="form-group">
+      <label for="name">Name:</label>
+      <input type="text" maxlength="250" class="form-control" name="name" value="{{item.name }}">
+
+      <label for="description">Description:</label>
+      <textarea class="form-control" maxlength="1000" rows="3" name="description">{{item.desc}}</textarea>
+
+      <label for="category">Category:</label>
+      <input type="text" maxlength="100" class="form-control" name="category" value="{{item.category }}">
+
+      <label for="url">Amazon link:</label>
+      <input type="text" maxlength="100" class="form-control" name="url" value="{{item.url }}">
+
+      <label for="img">Image:</label>
+      <input type="text" maxlength="100" class="form-control" name="img" value="{{item.img }}">
+
+      <button type="submit" class="btn btn-default" id="submit" type="submit">
+                <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>Save</button>
     </div>
-
-      <div class="catalog_products">
-        <form action="#" method = "post">
-            <div class="form-group">
-                <label for="name">Name:</label>
-                <input type ="text" maxlength="250" class="form-control" name="name" value="{{item.name }}">
-
-                <label for="description">Description:</label>
-                <textarea class="form-control" maxlength="1000" rows="3" name="description" >{{item.desc}}</textarea>
-
-                <label for="category">Category:</label>
-                <input type ="text" maxlength="100" class="form-control" name="category" value="{{item.category }}">
-
-                <label for="url">Amazon link:</label>
-                <input type ="text" maxlength="100" class="form-control" name="url" value="{{item.url }}">
-
-                <label for="img">Image:</label>
-                <input type ="text" maxlength="100" class="form-control" name="img" value="{{item.img }}">
-
-                <button type="submit" class="btn btn-default" id="submit" type="submit">
-                    <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>Save</button>
-                <a href = "{{url_for('showCatalog')}}">
-                <button class="btn btn-default delete">
-                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Cancel</button>
-                </a>
-            </div>
-        </form>
-    </div>
+  </form>
+  <a href="{{url_for('showProduct', categ_id=item.cat_id, product_id=product_id )}}">
+        <button class="btn btn-default delete">
+            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Cancel
+        </button>
+    </a>
+</div>
 {% endblock %}

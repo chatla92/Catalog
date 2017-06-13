@@ -1,13 +1,12 @@
-{% extends "main.html" %}
-{% block content %}
-<div id="sidebar" >
+{% extends "main.html" %} {% block content %}
+<div id="sidebar">
   <ul class="sidebar-nav">
     <li class="sidebar-brand">
       <span class="glyphicon glyphicon-list" aria-hidden="true">Catagories</span>
     </li>
     {% for categ in categories %}
     <li>
-      <a class="glyphicon glyphicon-chevron-right" aria-hidden="true"   href = "{{url_for('showProductsinCategory', categ_id=categ.cat_id)}}">{{categ.category}}</a>
+      <a class="glyphicon glyphicon-chevron-right" aria-hidden="true" href="{{url_for('showProductsinCategory', categ_id=categ.cat_id)}}">{{categ.category}}</a>
     </li>
     {% endfor %}
   </ul>
@@ -33,25 +32,22 @@
       </a>
     </div>
   </div>
-  <div class = 'flash'>
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
+  <div class='flash'>
+    {% with messages = get_flashed_messages() %} {% if messages %}
     <ul>
       {% for message in messages %}
       <li> <strong> {{ message }} </strong> </li>
       {% endfor %}
     </ul>
-    {% endif %}
-    {% endwith %}
+    {% endif %} {% endwith %}
   </div>
-  <section class="divider"><h6>Latest Products</h6></section>
+  <section class="divider">
+    <h6>Latest Products</h6></section>
   <section class="latest_cat">
     <ul>
       {% for prod in products %}
       <li>
-        <h5><a href = "{{url_for('showProduct', categ_id=prod.cat_id, product_id=prod.id )}}">{{prod.name}} <h6 style="font-style:italic;">({{prod.category}})</h6></a></h5><br
-      </li>
-      {% endfor %}
+        <h5><a href = "{{url_for('showProduct', categ_id=prod.cat_id, product_id=prod.id )}}">{{prod.name}} <h6 style="font-style:italic;">({{prod.category}})</h6></a></h5><br </li> {% endfor %}
     </ul>
   </section>
 </div>

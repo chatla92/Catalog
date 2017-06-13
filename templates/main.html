@@ -1,28 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-      <meta charset="utf-8">
-      <meta http-equiv="X-UA-Compatible" content="IE=edge">
-      <meta name="viewport" content="width=device-width, shrink-to-fit=no, initial-scale=1">
-      <meta name="description" content="">
-      <meta name="author" content="">
-      <title>Catalog</title>
-      <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous" rel="stylesheet">
-      <link href="{{url_for('static', filename='style.css')}}" rel="stylesheet">
-      <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet" type="text/css">
-    </head>
 
-    <body>
-      <header class="header">
-        <section class="header__inner">
-          <span class="header__name">
-            <a href="{{url_for('showCatalog')}}"><h3 >Amazon Electronics Catalog</h3></a>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, shrink-to-fit=no, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>Catalog</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous" rel="stylesheet">
+  <link href="{{url_for('static', filename='style.css')}}" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+  <header class="header">
+    <section class="header__inner">
+      <span class="header__name">
+            <a href="{{url_for('showCatalog')}}"><h3 style="color:#fff">Amazon Electronics Catalog</h3></a>
           </span>
-        </section>
-      </header>
-      <main>
-        {% block content %}
-        {% endblock %}
-      </main>
-    </body>
+    </section>
+  </header>
+  <main>
+    {% block content %} {% endblock %}
+  </main>
+</body>
+
 </html>
