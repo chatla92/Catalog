@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from database_setup import Base, Products, Reviews, Categories, User
-engine = create_engine('sqlite:///1_electronics_catalog.db', echo=True)
+engine = create_engine('sqlite:///1_electronics_catalog.db')
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
