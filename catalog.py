@@ -28,11 +28,13 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-# Login Page
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def showLogin():
+    """
+    Login page 
+    :return: Redirects the user to the home page after validating credentials
+    """
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in xrange(32))
     login_session['state'] = state
@@ -61,16 +63,24 @@ def showLogin():
 
 @auth.verify_password
 def verify_password(username, password):
+    """
+    Verifies the the password of the user
+    :param username: User name
+    :param password: password
+    :return: True, if credentials matched otherwise false
+    """
     user = session.query(User).filter_by(name=username).first()
     if not user or not user.verify_password(password):
         return False
     return True
 
-# Add a new user
-
 
 @app.route('/users/add', methods=['GET', 'POST'])
 def new_user():
+    """
+    Add a new user 
+    :return: Redirects to login page if username already exists or to home page if user is created succesfully
+    """
     if request.method == 'GET':
         return render_template('user_add.html')
     if request.method == 'POST':
@@ -95,12 +105,13 @@ def new_user():
         flash('User created succesfully')
         return redirect('/catalog')
 
-# Google login
-
 
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
-    # Validate state token
+    """
+    Google OAuth API call. Sets up login_session dictionary on success 
+    :return: 
+    """
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter.'), 401)
         response.headers['Content-Type'] = 'application/json'
@@ -196,7 +207,10 @@ def gconnect():
 
 @app.route('/gdisconnect')
 def gdisconnect():
-    # Only disconnect a connected user.
+    """
+    Google OAuth disconnect. 
+    :return: 
+    """
     credentials = login_session.get('credentials')
     if credentials is None:
         response = make_response(
@@ -217,6 +231,10 @@ def gdisconnect():
 
 @app.route('/disconnect')
 def disconnect():
+    """
+    Log off the user and unset login_session keys 
+    :return: 
+    """
     if 'provider' in login_session:
         if login_session['provider'] == 'google':
             gdisconnect()
@@ -235,10 +253,12 @@ def disconnect():
         return redirect(url_for('showCatalog'))
 
 
-# Helper Functions
-
-
 def createUser(login_session):
+    """
+    Create new user
+    :param login_session: 
+    :return: 
+    """
     newUser = User(name=login_session['username'], email=login_session[
         'email'])
     session.add(newUser)
@@ -248,11 +268,21 @@ def createUser(login_session):
 
 
 def getUserInfo(user_id):
+    """
+    Retrive user details from the database
+    :param user_id: 
+    :return: 
+    """
     user = session.query(User).filter_by(id=user_id).one()
     return user
 
 
 def getUserID(email):
+    """
+    Retrive id for the user with given email id
+    :param email: 
+    :return: 
+    """
     try:
         user = session.query(User).filter_by(email=email).one()
         return user.id

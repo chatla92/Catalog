@@ -1,9 +1,9 @@
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 from sqlalchemy import create_engine
 from passlib.apps import custom_app_context as pwd_context
-import datetime
+
 
 Base = declarative_base()
 
@@ -37,7 +37,7 @@ class Products(Base):
     name = Column(String(250), nullable=False)
     category = Column(String(100), nullable=False)
     cat_id = Column(Integer, ForeignKey('categories.id'))
-    categories = relationship(Categories)
+    categories = relationship(Categories, backref=backref("product", cascade="all, delete-orphan"))
     desc = Column(String(1000))
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
