@@ -345,21 +345,30 @@ def newProduct():
     if 'username' not in login_session:
         flash('Please Login to create new item')
         return redirect('/login')
+
     if request.method == 'POST':
-        new_product = Products(
-            name=request.form['name'], category=request.form['category'],
-            desc=request.form['decsription'],
-            url=request.form['url'],
-            img=request.form['img'], user_id=login_session['user_id'])
-        session.add(new_product)
-        flash('New Item %s Successfully Created' % new_product.name)
+        user = session.query(User).filter_by(name=login_session['username'].encode('ascii','ignore')).one()
+        try:
+            cat = session.query(Categories).filter_by(
+                name=str(request.form['category']).strip().encode('ascii','ignore')).one()
+        except:
+            new_cat = Categories(name=request.form['category'].strip().encode('ascii','ignore'))
+            session.add(new_cat)
+            session.commit()
+            cat = session.query(Categories).filter_by(
+                name=str(request.form['category']).strip().encode('ascii','ignore')).one()
+            pass
+        P = Products(name=str(request.form['name']).strip().encode('ascii','ignore'), cat_id=cat.id,
+                     category=str(request.form['category']).strip().encode('ascii','ignore'),
+                     desc=str(request.form['description']).strip().encode('ascii','ignore'), user_id=user.id,
+                     img=str(request.form['img']).encode('ascii','ignore'), url=str(request.form['url']).encode('ascii','ignore'))
+        session.add(P)
         session.commit()
-        return redirect(url_for('showCatalog'))
+        return redirect('/catalog')
     else:
         return render_template('new_product.html')
 
 # Edit a product
-
 
 @app.route('/catalog/<int:categ_id>/products/<int:product_id>/edit',
            methods=['GET', 'POST'])
